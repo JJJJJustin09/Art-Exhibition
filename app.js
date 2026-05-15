@@ -1,4 +1,13 @@
-const STORAGE_KEY = "oil-salon-artworks-v4";
+const STORAGE_KEY = "oil-salon-artworks-v5";
+const LEGACY_STORAGE_KEYS = [
+  "oil-salon-artworks-v1",
+  "oil-salon-artworks-v2",
+  "oil-salon-artworks-v3",
+  "oil-salon-artworks-v4",
+];
+const IMAGE_DB_NAME = "oil-salon-image-store";
+const IMAGE_DB_VERSION = 1;
+const IMAGE_STORE_NAME = "uploaded-images";
 
 const moodLabels = {
   landscape: "Landscape Room",
@@ -160,12 +169,28 @@ const dialogComments = document.querySelector("#dialog-comments");
 const commentForm = document.querySelector("#comment-form");
 const commentInput = document.querySelector("#comment-input");
 
-let artworks = loadArtworks();
+let artworks = [];
 let activeFilter = "all";
 let activeArtworkId = null;
 let selectedFile = null;
 
-render();
+init();
+
+async function init() {
+  clearLegacyStorage();
+  artworks = await loadArtworks();
+  render();
+}
+
+function clearLegacyStorage() {
+  LEGACY_STORAGE_KEYS.forEach((key) => {
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      // Ignore cleanup failures; the current version still avoids storing images in localStorage.
+    }
+  });
+}
 
 function setSelectedFile(file) {
   if (!file) {
@@ -218,14 +243,19 @@ artworkForm.addEventListener("submit", async (event) => {
   submitButton.textContent = "Hanging...";
 
   try {
-    const image = await fileToGalleryImage(file);
+    const imageBlob = await fileToGalleryImageBlob(file);
     const formData = new FormData(artworkForm);
+    const id = createId();
+    await saveUploadedImage(id, imageBlob);
+
     const artwork = {
-      id: createId(),
+      id,
       title: cleanText(formData.get("art-title")) || "Untitled Artwork",
       artist: cleanText(formData.get("artist-name")) || "Anonymous Artist",
       mood: formData.get("art-mood") || "abstract",
-      image,
+      image: URL.createObjectURL(imageBlob),
+      imageStorage: "indexedDB",
+      imageKey: id,
       story: cleanText(formData.get("art-story")) || "The artist has left the outside story open for now.",
       likes: 0,
       liked: false,
@@ -446,11 +476,11 @@ function toggleLike(id) {
   saveArtworks();
 }
 
-function loadArtworks() {
+async function loadArtworks() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (Array.isArray(saved) && saved.length) {
-      return saved;
+      return await hydrateStoredImages(saved);
     }
   } catch (error) {
     localStorage.removeItem(STORAGE_KEY);
@@ -461,10 +491,36 @@ function loadArtworks() {
 
 function saveArtworks() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(artworks));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(artworks.map(serializeArtwork)));
   } catch (error) {
-    alert("Browser storage is full. The image is visible now, but it may not be saved for later.");
+    alert("Browser storage is full. Likes and comments may not be saved for later.");
   }
+}
+
+function serializeArtwork(artwork) {
+  const serialized = { ...artwork };
+
+  if (serialized.imageStorage === "indexedDB") {
+    serialized.image = "";
+  }
+
+  return serialized;
+}
+
+async function hydrateStoredImages(storedArtworks) {
+  return Promise.all(
+    storedArtworks.map(async (artwork) => {
+      if (artwork.imageStorage !== "indexedDB" || !artwork.imageKey) {
+        return artwork;
+      }
+
+      const imageBlob = await getUploadedImage(artwork.imageKey);
+      return {
+        ...artwork,
+        image: imageBlob ? URL.createObjectURL(imageBlob) : "",
+      };
+    }),
+  );
 }
 
 function cleanText(value) {
@@ -491,7 +547,7 @@ function createId() {
   return `art-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-function fileToGalleryImage(file) {
+function fileToGalleryImageBlob(file) {
   return new Promise((resolve, reject) => {
     if (!file.type.startsWith("image/")) {
       reject(new Error("Unsupported file type"));
@@ -521,7 +577,18 @@ function fileToGalleryImage(file) {
       context.fillStyle = "#fffaf0";
       context.fillRect(0, 0, width, height);
       context.drawImage(image, 0, 0, width, height);
-      resolve(canvas.toDataURL("image/jpeg", 0.74));
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error("Image could not be compressed"));
+            return;
+          }
+
+          resolve(blob);
+        },
+        "image/jpeg",
+        0.74,
+      );
     });
 
     image.addEventListener("error", () => {
@@ -531,4 +598,60 @@ function fileToGalleryImage(file) {
 
     image.src = objectUrl;
   });
+}
+
+function openImageDatabase() {
+  return new Promise((resolve, reject) => {
+    if (!("indexedDB" in window)) {
+      reject(new Error("IndexedDB is unavailable"));
+      return;
+    }
+
+    const request = indexedDB.open(IMAGE_DB_NAME, IMAGE_DB_VERSION);
+
+    request.addEventListener("upgradeneeded", () => {
+      const database = request.result;
+
+      if (!database.objectStoreNames.contains(IMAGE_STORE_NAME)) {
+        database.createObjectStore(IMAGE_STORE_NAME);
+      }
+    });
+
+    request.addEventListener("success", () => resolve(request.result));
+    request.addEventListener("error", () => reject(request.error || new Error("Could not open image database")));
+  });
+}
+
+async function saveUploadedImage(key, imageBlob) {
+  const database = await openImageDatabase();
+
+  return new Promise((resolve, reject) => {
+    const transaction = database.transaction(IMAGE_STORE_NAME, "readwrite");
+    transaction.objectStore(IMAGE_STORE_NAME).put(imageBlob, key);
+    transaction.addEventListener("complete", () => {
+      database.close();
+      resolve();
+    });
+    transaction.addEventListener("error", () => {
+      database.close();
+      reject(transaction.error || new Error("Could not save image"));
+    });
+  });
+}
+
+async function getUploadedImage(key) {
+  try {
+    const database = await openImageDatabase();
+
+    return await new Promise((resolve) => {
+      const transaction = database.transaction(IMAGE_STORE_NAME, "readonly");
+      const request = transaction.objectStore(IMAGE_STORE_NAME).get(key);
+      request.addEventListener("success", () => resolve(request.result || null));
+      request.addEventListener("error", () => resolve(null));
+      transaction.addEventListener("complete", () => database.close());
+      transaction.addEventListener("error", () => database.close());
+    });
+  } catch (error) {
+    return null;
+  }
 }
