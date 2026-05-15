@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chromatic Oil Salon | Online Oil Exhibition</title>
+    <meta
+      name="description"
+      content="Chromatic Oil Salon is an online oil painting exhibition where visitors can explore vivid artworks, upload paintings, like favorite pieces, and leave gallery comments."
+    />
+    <meta
+      name="keywords"
+      content="online oil painting exhibition, oil painting gallery, digital art salon, contemporary oil art, upload artwork, art community"
+    />
+    <meta name="author" content="Chromatic Oil Salon" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#17120f" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Chromatic Oil Salon | Online Oil Exhibition" />
+    <meta
+      property="og:description"
+      content="Explore a vivid online oil painting exhibition, submit your own work, and respond to paintings through likes and comments."
+    />
+    <meta property="og:image" content="assets/hero-gallery.jpg" />
+    <meta property="og:site_name" content="Chromatic Oil Salon" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Chromatic Oil Salon | Online Oil Exhibition" />
+    <meta
+      name="twitter:description"
+      content="A vivid online oil painting exhibition for discovering, uploading, liking, and commenting on oil artworks."
+    />
+    <meta name="twitter:image" content="assets/hero-gallery.jpg" />
+    <link rel="canonical" href="/" />
+    <link rel="manifest" href="site.webmanifest" />
+    <link rel="stylesheet" href="styles.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Chromatic Oil Salon",
+        "description": "An online oil painting exhibition where visitors can explore vivid artworks, upload paintings, like favorite pieces, and leave gallery comments.",
+        "inLanguage": "en",
+        "image": "assets/hero-gallery.jpg",
+        "about": {
+          "@type": "Thing",
+          "name": "Oil painting exhibition"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header" aria-label="Primary navigation">
+      <a class="brand" href="#top" aria-label="Chromatic Oil Salon home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Chromatic Oil Salon</span>
+      </a>
+      <nav class="nav-links" aria-label="Page navigation">
+        <a href="#gallery">Gallery</a>
+        <a href="#upload">Submit</a>
+        <a href="#dialogue">Comments</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <img class="hero-image" src="assets/hero-gallery.jpg" alt="A vivid oil painting gallery" />
+        <div class="hero-shade" aria-hidden="true"></div>
+        <div class="hero-content">
+          <p class="eyebrow">Online Oil Salon</p>
+          <h1 id="hero-title">Chromatic Oil Salon</h1>
+          <p class="hero-copy">Upload your oil paintings, discover other artists, and leave a response in the brushwork.</p>
+          <div class="hero-actions">
+            <a class="primary-action" href="#upload">Submit Artwork</a>
+            <a class="secondary-action" href="#gallery">Enter Gallery</a>
+          </div>
+        </div>
+        <aside class="upload-panel" id="upload" aria-labelledby="upload-title">
+          <form id="artwork-form">
+            <div class="panel-heading">
+              <p class="eyebrow">Open Call</p>
+              <h2 id="upload-title">Upload an Oil Painting</h2>
+            </div>
+
+            <label class="file-drop" for="artwork-file">
+              <span class="file-mark" aria-hidden="true">+</span>
+              <span id="file-name">Choose or drop image</span>
+              <input id="artwork-file" name="artwork-file" type="file" accept="image/*" />
+            </label>
+
+            <div class="form-grid">
+              <label>
+                <span>Artwork Title</span>
+                <input id="art-title" name="art-title" type="text" placeholder="e.g. Roses After Midnight" maxlength="42" required />
+              </label>
+              <label>
+                <span>Artist</span>
+                <input id="artist-name" name="artist-name" type="text" placeholder="Your name" maxlength="28" required />
+              </label>
+            </div>
+
+            <label>
+              <span>Artist Note</span>
+              <textarea id="art-story" name="art-story" rows="3" placeholder="Describe the mood, place, or memory behind the work" maxlength="160"></textarea>
+            </label>
+
+            <label>
+              <span>Exhibition Room</span>
+              <select id="art-mood" name="art-mood">
+                <option value="landscape">Landscape</option>
+                <option value="still-life">Still Life</option>
+                <option value="city">City</option>
+                <option value="figure">Figure</option>
+                <option value="abstract">Abstract</option>
+              </select>
+            </label>
+
+            <button class="submit-button" type="submit">Hang on the Wall</button>
+          </form>
+        </aside>
+      </section>
+
+      <section class="gallery-section" id="gallery" aria-labelledby="gallery-title">
+        <div class="section-heading">
+          <p class="eyebrow">Current Exhibition</p>
+          <h2 id="gallery-title">Now Showing</h2>
+          <p>Fresh color keeps moving across this exhibition wall.</p>
+        </div>
+
+        <div class="toolbar" aria-label="Artwork filters">
+          <button class="filter-button is-active" type="button" data-filter="all">All</button>
+          <button class="filter-button" type="button" data-filter="landscape">Landscape</button>
+          <button class="filter-button" type="button" data-filter="still-life">Still Life</button>
+          <button class="filter-button" type="button" data-filter="city">City</button>
+          <button class="filter-button" type="button" data-filter="figure">Figure</button>
+          <button class="filter-button" type="button" data-filter="abstract">Abstract</button>
+        </div>
+
+        <div class="gallery-grid" id="gallery-grid" aria-live="polite"></div>
+      </section>
+
+      <section class="dialogue-section" id="dialogue" aria-labelledby="dialogue-title">
+        <div>
+          <p class="eyebrow">Salon Notes</p>
+          <h2 id="dialogue-title">Recent Responses</h2>
+        </div>
+        <div class="comment-stream" id="comment-stream"></div>
+      </section>
+    </main>
+
+    <dialog class="art-dialog" id="art-dialog" aria-labelledby="dialog-title">
+      <button class="close-dialog" type="button" aria-label="Close">×</button>
+      <div class="dialog-layout">
+        <figure class="dialog-artwork">
+          <img id="dialog-image" src="" alt="" />
+        </figure>
+        <section class="dialog-details">
+          <p class="eyebrow" id="dialog-mood"></p>
+          <h2 id="dialog-title"></h2>
+          <p class="artist-line" id="dialog-artist"></p>
+          <p class="story-line" id="dialog-story"></p>
+          <div class="dialog-actions">
+            <button class="like-button" id="dialog-like" type="button"></button>
+          </div>
+          <div class="comments-panel">
+            <h3>Comments</h3>
+            <div id="dialog-comments" class="comment-list"></div>
+            <form id="comment-form" class="comment-form">
+              <input id="comment-input" type="text" maxlength="90" placeholder="Leave your exhibition note" required />
+              <button type="submit">Post</button>
+            </form>
+          </div>
+        </section>
+      </div>
+    </dialog>
+
+    <template id="art-card-template">
+      <article class="art-card">
+        <button class="artwork-button" type="button">
+          <img class="artwork-image" src="" alt="" />
+        </button>
+        <div class="art-card-body">
+          <div>
+            <p class="art-mood"></p>
+            <h3 class="art-title"></h3>
+            <p class="art-artist"></p>
+          </div>
+          <div class="card-actions">
+            <button class="icon-button card-like" type="button" aria-label="Like"></button>
+            <button class="icon-button card-comment" type="button" aria-label="Comment"></button>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
