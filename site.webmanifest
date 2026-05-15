@@ -8,7 +8,7 @@
   "theme_color": "#17120f",
   "icons": [
     {
-      "src": "assets/hero-gallery.jpg",
+      "src": "hero-gallery.jpg",
       "sizes": "1774x887",
       "type": "image/jpeg",
       "purpose": "any"

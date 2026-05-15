@@ -28,7 +28,7 @@ publicUrl.pathname = publicUrl.pathname.replace(/\/+$/, "");
 const siteUrl = publicUrl.toString().replace(/\/$/, "");
 const homeUrl = `${siteUrl}/`;
 const galleryUrl = `${siteUrl}/#gallery`;
-const imageUrl = `${siteUrl}/assets/hero-gallery.jpg`;
+const imageUrl = `${siteUrl}/hero-gallery.jpg`;
 
 const replacements = [
   {
