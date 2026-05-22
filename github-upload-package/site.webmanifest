@@ -1,0 +1,17 @@
+{
+  "name": "Chromatic Oil Salon",
+  "short_name": "Oil Salon",
+  "description": "An online oil painting exhibition for exploring, uploading, liking, and commenting on artworks.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbf5ea",
+  "theme_color": "#17120f",
+  "icons": [
+    {
+      "src": "hero-gallery.jpg",
+      "sizes": "1774x887",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}
