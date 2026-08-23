@@ -1,12 +1,13 @@
-const STORAGE_KEY = "oil-salon-artworks-v6";
+const STORAGE_KEY = "oil-salon-artworks-v7";
 const LEGACY_STORAGE_KEYS = [
   "oil-salon-artworks-v1",
   "oil-salon-artworks-v2",
   "oil-salon-artworks-v3",
   "oil-salon-artworks-v4",
   "oil-salon-artworks-v5",
+  "oil-salon-artworks-v6",
 ];
-const LEGACY_IMAGE_RESET_KEY = "oil-salon-images-reset-v6";
+const LEGACY_IMAGE_RESET_KEY = "oil-salon-images-reset-v7";
 const IMAGE_DB_NAME = "oil-salon-image-store";
 const IMAGE_DB_VERSION = 1;
 const IMAGE_STORE_NAME = "uploaded-images";
@@ -21,7 +22,44 @@ const moodLabels = {
   abstract: "Abstract Room",
 };
 
-const seedArtworks = [];
+// These are bundled with the published site, so every visitor receives the
+// same 34-work exhibition before any browser-local interactions are added.
+const seedArtworks = [
+  { id: "wechat-img-185", title: "The Painting in the Room", artist: "FrameHunter", mood: "landscape", image: "assets/artworks/01-wechat-img-185.webp", story: "A room, a landscape, and a frame that refuses to stay quiet.", likes: 0, comments: [] },
+  { id: "wechat-img-207", title: "Snow Has No Memory", artist: "Nº 9 / north", mood: "landscape", image: "assets/artworks/02-wechat-img-207.webp", story: "snow + blue + one impossible horizon.", likes: 0, comments: [] },
+  { id: "wechat-img-217", title: "Bouquet, Still Listening", artist: "Bibi_花", mood: "still-life", image: "assets/artworks/03-wechat-img-217.webp", story: "Formally arranged, emotionally everywhere.", likes: 0, comments: [] },
+  { id: "wechat-img-226", title: "Quiet at the Window", artist: "E. Vasseur", mood: "figure", image: "assets/artworks/04-wechat-img-226.webp", story: "A paused gesture rendered with unusual tenderness.", likes: 0, comments: [] },
+  { id: "wechat-img-190", title: "Small Things, Loud Room", artist: "table_ghost", mood: "still-life", image: "assets/artworks/05-wechat-img-190.webp", story: "shelf objects having a better social life than me.", likes: 0, comments: [] },
+  { id: "wechat-img-208", title: "Three Vessels After Noon", artist: "Sorin D.", mood: "still-life", image: "assets/artworks/06-wechat-img-208.webp", story: "A compact still life in which brass carries the entire conversation.", likes: 0, comments: [] },
+  { id: "wechat-img-218", title: "Flowers Were Here First", artist: "floral emergency", mood: "still-life", image: "assets/artworks/07-wechat-img-218.webp", story: "please do not call these “just flowers.”", likes: 0, comments: [] },
+  { id: "wechat-img-227", title: "Garden With No Exit", artist: "Lila M.", mood: "landscape", image: "assets/artworks/08-wechat-img-227.webp", story: "green, pink, and a slightly suspicious amount of peace.", likes: 0, comments: [] },
+  { id: "wechat-img-202", title: "Blue Flowers, No Filter", artist: "BlueRoom_404", mood: "still-life", image: "assets/artworks/09-wechat-img-202.webp", story: "blue bouquet; zero need for extra drama.", likes: 0, comments: [] },
+  { id: "wechat-img-209", title: "Yellow Weather", artist: "Soleil??", mood: "landscape", image: "assets/artworks/10-wechat-img-209.webp", story: "the yellow is yelling. respectfully.", likes: 0, comments: [] },
+  { id: "wechat-img-219", title: "Street With a Long Shadow", artist: "A. Kovač", mood: "city", image: "assets/artworks/11-wechat-img-219.webp", story: "Perspective narrows until the street feels like a memory.", likes: 0, comments: [] },
+  { id: "wechat-img-228", title: "The Seat by the Wall", artist: "Mina’s cousin", mood: "figure", image: "assets/artworks/12-wechat-img-228.webp", story: "She looks away; the painting does not.", likes: 0, comments: [] },
+  { id: "wechat-img-203", title: "Green Wallpaper, White Dress", artist: "Mlle. R.", mood: "figure", image: "assets/artworks/13-wechat-img-203.webp", story: "A portrait built from quiet fabric, distance, and almost no explanation.", likes: 0, comments: [] },
+  { id: "wechat-img-211", title: "Mountains on Fast Forward", artist: "山脈", mood: "landscape", image: "assets/artworks/14-wechat-img-211.webp", story: "⛰ × 3 / saturation: fearless", likes: 0, comments: [] },
+  { id: "wechat-img-220", title: "Two Faces, One Car", artist: "CUB3", mood: "abstract", image: "assets/artworks/15-wechat-img-220.webp", story: "Two faces, sharp corners, no small talk.", likes: 0, comments: [] },
+  { id: "wechat-img-229", title: "Purple Coat, Blue Noise", artist: "p.senn", mood: "figure", image: "assets/artworks/16-wechat-img-229.webp", story: "purple coat, blue air, main-character energy.", likes: 0, comments: [] },
+  { id: "wechat-img-212", title: "Bubbles Under Glass", artist: "Qing / 青", mood: "still-life", image: "assets/artworks/17-wechat-img-212.webp", story: "09:12 / glass, flowers, moonlight-ish", likes: 0, comments: [] },
+  { id: "wechat-img-221", title: "The Man Who Waited", artist: "Mr. T.", mood: "figure", image: "assets/artworks/18-wechat-img-221.webp", story: "His beard has seen more than this exhibition.", likes: 0, comments: [] },
+  { id: "wechat-img-231", title: "Hand on the Lapel", artist: "the_lapel", mood: "figure", image: "assets/artworks/19-wechat-img-231.webp", story: "tie adjusted. dignity activated.", likes: 0, comments: [] },
+  { id: "wechat-img-213", title: "Gold Over the Canal", artist: "B. Moretti", mood: "city", image: "assets/artworks/20-wechat-img-213.webp", story: "gold water doing what gold water does.", likes: 0, comments: [] },
+  { id: "wechat-img-222", title: "Edge of a Bad Storm", artist: "sea-level", mood: "landscape", image: "assets/artworks/21-wechat-img-222.webp", story: "The coast is stripped back to weather, pressure, and restraint.", likes: 0, comments: [] },
+  { id: "wechat-img-232", title: "Tables Remember Everything", artist: "JAMIE_199", mood: "still-life", image: "assets/artworks/22-wechat-img-232.webp", story: "Objects everywhere. Narrative loading…", likes: 0, comments: [] },
+  { id: "wechat-img-204", title: "Profile Against Red", artist: "Ника", mood: "figure", image: "assets/artworks/23-wechat-img-204.webp", story: "red wall. side profile. absolutely committed.", likes: 0, comments: [] },
+  { id: "wechat-img-214", title: "Last Field Before Town", artist: "R. Campos", mood: "landscape", image: "assets/artworks/24-wechat-img-214.webp", story: "wheat field, tiny houses, big summer.", likes: 0, comments: [] },
+  { id: "wechat-img-223", title: "Water Remembers the Houses", artist: "cloudywater", mood: "city", image: "assets/artworks/25-wechat-img-223.webp", story: "a canal scene with its volume turned low.", likes: 0, comments: [] },
+  { id: "wechat-img-233", title: "Sunlight on the Neck", artist: "Auré", mood: "figure", image: "assets/artworks/26-wechat-img-233.webp", story: "Skin, sunlight, and the softest possible departure.", likes: 0, comments: [] },
+  { id: "wechat-img-205", title: "Yellow Cap Theory", artist: "帽子先生", mood: "figure", image: "assets/artworks/27-wechat-img-205.webp", story: "hat on. mystery on.", likes: 0, comments: [] },
+  { id: "wechat-img-215", title: "Harbour in Peach Light", artist: "Ciel_13", mood: "city", image: "assets/artworks/28-wechat-img-215.webp", story: "industrial skyline, but make it peach.", likes: 0, comments: [] },
+  { id: "wechat-img-224", title: "One Tree, Enough Sky", artist: "TreenotTree", mood: "landscape", image: "assets/artworks/29-wechat-img-224.webp", story: "One tree carrying the whole composition.", likes: 0, comments: [] },
+  { id: "wechat-img-234", title: "Nap, 2:46 PM", artist: "L. & the sofa", mood: "figure", image: "assets/artworks/30-wechat-img-234.webp", story: "do not disturb — thinking in progress.", likes: 0, comments: [] },
+  { id: "wechat-img-206", title: "The Road Is Green Today", artist: "green route", mood: "landscape", image: "assets/artworks/31-wechat-img-206.webp", story: "green road, blue distance, no deadline.", likes: 0, comments: [] },
+  { id: "wechat-img-216", title: "Roses at Closing Time", artist: "Rose Dept.", mood: "still-life", image: "assets/artworks/32-wechat-img-216.webp", story: "flowers after everyone has left.", likes: 0, comments: [] },
+  { id: "wechat-img-225", title: "Rain Leaves the Town", artist: "0225", mood: "city", image: "assets/artworks/33-wechat-img-225.webp", story: "wet pavement > dry pavement.", likes: 0, comments: [] },
+  { id: "wechat-img-235", title: "The Tie Was His Idea", artist: "A.R. / no bio", mood: "figure", image: "assets/artworks/34-wechat-img-235.webp", story: "a gentleman with excellent posture and unfinished business.", likes: 0, comments: [] },
+];
 
 const galleryGrid = document.querySelector("#gallery-grid");
 const cardTemplate = document.querySelector("#art-card-template");
@@ -578,8 +616,10 @@ function clamp(value, minimum, maximum) {
 async function loadArtworks() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (Array.isArray(saved) && saved.length) {
-      return await hydrateStoredImages(saved);
+    if (Array.isArray(saved)) {
+      const storedArtworks = await hydrateStoredImages(saved);
+      const bundledIds = new Set(seedArtworks.map((artwork) => artwork.id));
+      return [...seedArtworks, ...storedArtworks.filter((artwork) => !bundledIds.has(artwork.id))];
     }
   } catch (error) {
     localStorage.removeItem(STORAGE_KEY);
