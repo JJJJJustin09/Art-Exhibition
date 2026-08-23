@@ -1,10 +1,12 @@
-const STORAGE_KEY = "oil-salon-artworks-v5";
+const STORAGE_KEY = "oil-salon-artworks-v6";
 const LEGACY_STORAGE_KEYS = [
   "oil-salon-artworks-v1",
   "oil-salon-artworks-v2",
   "oil-salon-artworks-v3",
   "oil-salon-artworks-v4",
+  "oil-salon-artworks-v5",
 ];
+const LEGACY_IMAGE_RESET_KEY = "oil-salon-images-reset-v6";
 const IMAGE_DB_NAME = "oil-salon-image-store";
 const IMAGE_DB_VERSION = 1;
 const IMAGE_STORE_NAME = "uploaded-images";
@@ -19,126 +21,7 @@ const moodLabels = {
   abstract: "Abstract Room",
 };
 
-const seedArtworks = [
-  {
-    id: "coastal-village",
-    title: "Above the Evening Tide",
-    artist: "Lin Qiao",
-    mood: "landscape",
-    image: "art-coastal-village.jpg",
-    story: "Orange clouds press toward the water while the village is lifted by the last light.",
-    likes: 38,
-    comments: [
-      { text: "The color has real warmth, like dusk paused on canvas.", at: "Today" },
-      { text: "The blue and orange contrast is especially strong.", at: "Yesterday" },
-    ],
-  },
-  {
-    id: "still-life",
-    title: "Porcelain Vase and Lemons",
-    artist: "Mira Shen",
-    mood: "still-life",
-    image: "art-still-life.jpg",
-    story: "Quiet objects are lit by saturated color, like a short poem on an afternoon table.",
-    likes: 52,
-    comments: [{ text: "The flowers and fruit both have a lively paint texture.", at: "Today" }],
-  },
-  {
-    id: "rainy-city",
-    title: "Neon After Rain",
-    artist: "Zhou Wen",
-    mood: "city",
-    image: "art-rainy-city.jpg",
-    story: "Rain recolors the street, umbrella silhouettes, and reflections until the city glows.",
-    likes: 47,
-    comments: [
-      { text: "The wet reflections feel cinematic.", at: "Today" },
-      { text: "This piece has a strong visual rhythm.", at: "Three days ago" },
-    ],
-  },
-  {
-    id: "golden-horses",
-    title: "Wind Over the Golden Field",
-    artist: "An He",
-    mood: "landscape",
-    image: "art-golden-horses.jpg",
-    story: "Wind runs through the grass while the sky opens like a dark curtain.",
-    likes: 44,
-    comments: [{ text: "It has force, and it has light.", at: "Yesterday" }],
-  },
-  {
-    id: "orchard-path",
-    title: "Orchard After Rain",
-    artist: "Elena Park",
-    mood: "landscape",
-    image: "art-orchard-path.jpg",
-    story: "Wet leaves, shallow puddles, and morning light turn a quiet path into a bright green corridor.",
-    likes: 41,
-    comments: [{ text: "The greens feel clean without becoming flat.", at: "Today" }],
-  },
-  {
-    id: "greenhouse",
-    title: "Glasshouse Morning",
-    artist: "Tessa Wu",
-    mood: "still-life",
-    image: "art-greenhouse.jpg",
-    story: "Terracotta, glass, and rain-heavy leaves hold the room in a soft morning glow.",
-    likes: 36,
-    comments: [{ text: "The light through the glass is the strongest part for me.", at: "Yesterday" }],
-  },
-  {
-    id: "violin-chair",
-    title: "Violin on Vermilion",
-    artist: "Omar Vale",
-    mood: "still-life",
-    image: "art-violin-chair.jpg",
-    story: "A studio corner arranged around sound, sunlight, and the saturated red of velvet.",
-    likes: 49,
-    comments: [{ text: "The chair color makes the instrument feel warmer.", at: "Today" }],
-  },
-  {
-    id: "mountain-lake",
-    title: "Violet Dawn Lake",
-    artist: "Iris Calder",
-    mood: "landscape",
-    image: "art-mountain-lake.jpg",
-    story: "Cold peaks and violet clouds meet the first gold edge of morning on the lake.",
-    likes: 54,
-    comments: [{ text: "The reflection gives the whole work a calm structure.", at: "Two days ago" }],
-  },
-  {
-    id: "abstract-dancer",
-    title: "Figure in Motion",
-    artist: "Maya Sol",
-    mood: "abstract",
-    image: "art-abstract-dancer.jpg",
-    story: "A moving figure is reduced to color, pressure, and a few decisive dark contours.",
-    likes: 33,
-    comments: [{ text: "The motion reads quickly even from a small thumbnail.", at: "Today" }],
-  },
-  {
-    id: "portrait-memory",
-    title: "Profile in a Red Scarf",
-    artist: "Ning Yue",
-    mood: "figure",
-    image:
-      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 1120'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%231758c8'/%3E%3Cstop offset='.46' stop-color='%23c8337f'/%3E%3Cstop offset='1' stop-color='%23f2b735'/%3E%3C/linearGradient%3E%3Cfilter id='paint'%3E%3CfeTurbulence baseFrequency='.018' numOctaves='4' seed='8'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='18'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='900' height='1120' fill='url(%23bg)'/%3E%3Cg filter='url(%23paint)' opacity='.92'%3E%3Cpath d='M342 848c-78-38-121-117-109-214 13-104 93-242 220-246 133-4 226 124 215 251-12 132-104 243-209 246-41 2-82-9-117-37Z' fill='%23f1c08e'/%3E%3Cpath d='M258 926c70-130 162-185 286-172 97 10 159 71 204 174v192H258Z' fill='%2317120f'/%3E%3Cpath d='M258 818c127 39 285 32 430-15l58 155c-175 81-353 81-533-3Z' fill='%23e0472f'/%3E%3Cpath d='M321 454c55-144 228-196 340-83 52 53 60 124 35 196-45-65-111-96-193-92-76 3-136 30-182 79-18-41-18-75 0-100Z' fill='%2324201d'/%3E%3Cpath d='M430 628c36 26 79 29 129 8' fill='none' stroke='%23713830' stroke-width='20' stroke-linecap='round'/%3E%3Cpath d='M378 572c24-15 50-15 78 0M545 566c29-12 55-9 78 8' fill='none' stroke='%2317120f' stroke-width='15' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E",
-    story: "Heavy blocks of color catch the second before a figure turns away.",
-    likes: 29,
-    comments: [{ text: "The red is immediate, and the mood is clear.", at: "Today" }],
-  },
-  {
-    id: "abstract-field",
-    title: "Untitled Blue",
-    artist: "Kai Mo",
-    mood: "abstract",
-    image:
-      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 900'%3E%3Cdefs%3E%3Cfilter id='rough'%3E%3CfeTurbulence baseFrequency='.025' numOctaves='5' seed='12'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='34'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='1200' height='900' fill='%23fff5db'/%3E%3Cg filter='url(%23rough)'%3E%3Cpath d='M-70 601C186 513 354 505 537 590c197 91 413 89 738-98v484H-70Z' fill='%231758c8'/%3E%3Cpath d='M-40 396c204-96 379-101 526-17 167 96 343 99 762-68v286c-321 120-563 121-742 25-161-87-344-81-546 15Z' fill='%2308745f' opacity='.92'/%3E%3Cpath d='M-20 254c247-92 438-83 571 31 147 126 312 135 653 2v153c-315 94-531 88-685-26-143-107-316-117-539-32Z' fill='%23e0472f' opacity='.9'/%3E%3Cpath d='M95 691c160-152 324-219 493-201 215 23 352-55 527-240' fill='none' stroke='%23f2b735' stroke-width='58' stroke-linecap='round' opacity='.88'/%3E%3Cpath d='M67 181c215 56 396 51 542-16 171-78 353-76 544 8' fill='none' stroke='%23c8337f' stroke-width='46' stroke-linecap='round' opacity='.78'/%3E%3C/g%3E%3C/svg%3E",
-    story: "Saturated bands of color push against each other like an unexplained tide.",
-    likes: 31,
-    comments: [{ text: "This would work well at a large scale.", at: "Yesterday" }],
-  },
-];
+const seedArtworks = [];
 
 const galleryGrid = document.querySelector("#gallery-grid");
 const cardTemplate = document.querySelector("#art-card-template");
@@ -169,18 +52,47 @@ let selectedFile = null;
 init();
 
 async function init() {
-  clearLegacyStorage();
+  await clearLegacyStorage();
   artworks = (await loadArtworks()).map(normalizeArtwork);
   render();
   void populateVisualEstimates();
 }
 
-function clearLegacyStorage() {
+async function clearLegacyStorage() {
+  let hasLegacyArtworkData = false;
+
   LEGACY_STORAGE_KEYS.forEach((key) => {
     try {
+      hasLegacyArtworkData ||= localStorage.getItem(key) !== null;
       localStorage.removeItem(key);
     } catch (error) {
-      // Ignore cleanup failures; the current version still avoids storing images in localStorage.
+      // Continue when browser storage is unavailable.
+    }
+  });
+
+  if (!hasLegacyArtworkData) {
+    return;
+  }
+
+  try {
+    if (localStorage.getItem(LEGACY_IMAGE_RESET_KEY) !== "complete") {
+      await deleteLegacyArtworkImages();
+      localStorage.setItem(LEGACY_IMAGE_RESET_KEY, "complete");
+    }
+  } catch (error) {
+    // The new gallery still starts empty when IndexedDB cannot be cleared.
+  }
+}
+
+function deleteLegacyArtworkImages() {
+  return new Promise((resolve) => {
+    try {
+      const request = indexedDB.deleteDatabase(IMAGE_DB_NAME);
+      request.addEventListener("success", resolve, { once: true });
+      request.addEventListener("error", resolve, { once: true });
+      request.addEventListener("blocked", resolve, { once: true });
+    } catch (error) {
+      resolve();
     }
   });
 }
@@ -338,7 +250,7 @@ function renderGallery() {
   if (!visibleArtworks.length) {
     const empty = document.createElement("p");
     empty.className = "empty-state";
-    empty.textContent = "This room is still waiting for its first artwork.";
+    empty.textContent = "No artworks yet. Upload the first piece to open the exhibition.";
     galleryGrid.append(empty);
     return;
   }
@@ -513,7 +425,7 @@ function normalizeArtwork(artwork) {
   delete normalized.liked;
 
   if (isValidVisualScore(normalized.visualScore)) {
-    normalized.visualScore = Math.round(Number(normalized.visualScore));
+    normalized.visualScore = Number(Number(normalized.visualScore).toFixed(1));
     normalized.visualScoreState = "ready";
   } else {
     delete normalized.visualScore;
@@ -533,28 +445,32 @@ function isValidVisualScore(value) {
 
 function visualScoreLabel(artwork) {
   if (isValidVisualScore(artwork.visualScore)) {
-    return `Estimate ${Math.round(Number(artwork.visualScore))}/10`;
+    return `AI score ${formatVisualScore(artwork.visualScore)}/10`;
   }
 
-  return artwork.visualScoreState === "unavailable" ? "Estimate unavailable" : "Estimating…";
+  return artwork.visualScoreState === "unavailable" ? "AI score unavailable" : "Calculating AI score…";
 }
 
 function visualScoreAccessibleLabel(artwork) {
   if (isValidVisualScore(artwork.visualScore)) {
-    return `AI-style visual estimate: ${Math.round(Number(artwork.visualScore))} out of 10.`;
+    return `AI score: ${formatVisualScore(artwork.visualScore)} out of 10.`;
   }
 
   return artwork.visualScoreState === "unavailable"
-    ? "AI-style visual estimate is unavailable for this image."
-    : "AI-style visual estimate is being calculated.";
+    ? "AI score is unavailable for this image."
+    : "AI score is being calculated.";
 }
 
 function visualScoreValue(artwork) {
   if (isValidVisualScore(artwork.visualScore)) {
-    return `${Math.round(Number(artwork.visualScore))} / 10`;
+    return `${formatVisualScore(artwork.visualScore)} / 10`;
   }
 
   return artwork.visualScoreState === "unavailable" ? "Unavailable" : "Estimating…";
+}
+
+function formatVisualScore(value) {
+  return Number(value).toFixed(1);
 }
 
 async function estimateVisualScore(source) {
@@ -626,7 +542,7 @@ async function estimateVisualScore(source) {
     const balance = 1 - clamp(Math.sqrt(quadrantVariance) / 0.22, 0, 1);
     const score = 1.4 + tonalRange * 2.8 + colourVariation * 2.2 + texture * 2.2 + balance * 1.4;
 
-    return Math.round(clamp(score, VISUAL_SCORE_MIN, VISUAL_SCORE_MAX));
+    return Number(clamp(score, VISUAL_SCORE_MIN, VISUAL_SCORE_MAX).toFixed(1));
   } catch (error) {
     return null;
   }

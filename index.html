@@ -33,7 +33,7 @@
     <link rel="canonical" href="/" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="manifest" href="site.webmanifest" />
-    <link rel="stylesheet" href="styles.css?v=likes-score-v1" />
+    <link rel="stylesheet" href="styles.css?v=likes-score-v2" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -161,10 +161,10 @@
           <p class="story-line" id="dialog-story"></p>
           <section class="visual-estimate" aria-labelledby="visual-estimate-title" aria-describedby="visual-estimate-note">
             <div class="visual-estimate-heading">
-              <p id="visual-estimate-title">AI-style visual estimate</p>
+              <p id="visual-estimate-title">AI score</p>
               <output class="visual-estimate-value" id="dialog-score" aria-live="polite"></output>
             </div>
-            <p id="visual-estimate-note">An instant 1–10 estimate made in this browser from colour, tonal range, and texture. It is not a professional assessment.</p>
+            <p id="visual-estimate-note">AI score is an instant 1–10 estimate made in this browser from colour, tonal range, and texture. It is not a professional assessment.</p>
           </section>
           <div class="dialog-actions">
             <button class="like-button" id="dialog-like" type="button"></button>
@@ -201,6 +201,6 @@
       </article>
     </template>
 
-    <script src="app.js?v=likes-score-v1"></script>
+    <script src="app.js?v=likes-score-v2"></script>
   </body>
 </html>

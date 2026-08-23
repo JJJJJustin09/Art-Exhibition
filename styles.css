@@ -608,6 +608,14 @@ a:focus-visible {
   color: rgba(23, 18, 15, 0.68);
 }
 
+.gallery-grid > .empty-state {
+  display: grid;
+  min-height: 112px;
+  place-items: center;
+  grid-column: 1 / -1;
+  text-align: center;
+}
+
 .art-dialog {
   width: min(1120px, calc(100vw - 28px));
   max-height: min(860px, calc(100svh - 28px));
