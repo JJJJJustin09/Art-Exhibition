@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("fonts/BricolageGrotesque-Variable.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --ink: #17120f;
   --paper: #fbf5ea;
@@ -185,6 +193,17 @@ h1 {
   font-weight: 950;
   letter-spacing: 0;
   text-shadow: 0 18px 50px rgba(0, 0, 0, 0.38);
+}
+
+#hero-title {
+  max-inline-size: 12ch;
+  font-family: "Bricolage Grotesque", "Avenir Next", "Helvetica Neue", system-ui, sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 650;
+  font-size: clamp(3.25rem, 7.5vw, 6rem);
+  line-height: 0.93;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 
 .hero-copy {
