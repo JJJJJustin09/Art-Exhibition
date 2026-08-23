@@ -49,4 +49,6 @@ Redeploy once more so `robots.txt`, `sitemap.xml`, canonical tags, and social pr
 
 ## Current Limitation
 
-The upload, likes, and comments are browser-local in this version. Public visitors can interact in their own browser, but their uploaded works and comments are not shared with other visitors yet. To make uploads visible to everyone, the site needs a backend database and image storage.
+The upload, likes, and comments are browser-local in this version. A visitor may add any number of likes, but that cumulative total is only stored in that visitor's browser and is not shared with other visitors. Public visitors can interact in their own browser, but their uploaded works and comments are not shared with other visitors yet. To make uploads visible to everyone, the site needs a backend database and image storage.
+
+The “AI-style visual estimate” is also calculated entirely in the browser from colour variation, tonal range, texture, and broad image balance. It always returns an integer from 1 to 10, does not upload an image or use an API key, and is deliberately presented as an estimate rather than a professional or model-backed art assessment.

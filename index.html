@@ -6,7 +6,7 @@
     <title>Chromatic Oil Salon | Online Oil Exhibition</title>
     <meta
       name="description"
-      content="Chromatic Oil Salon is an online oil painting exhibition where visitors can explore vivid artworks, upload paintings, like favorite pieces, and leave gallery comments."
+      content="Chromatic Oil Salon is an online oil painting exhibition where visitors can explore vivid artworks, upload paintings, add likes, and see an instant visual estimate."
     />
     <meta
       name="keywords"
@@ -19,7 +19,7 @@
     <meta property="og:title" content="Chromatic Oil Salon | Online Oil Exhibition" />
     <meta
       property="og:description"
-      content="Explore a vivid online oil painting exhibition, submit your own work, and respond to paintings through likes and comments."
+      content="Explore a vivid online oil painting exhibition, submit your own work, and respond through repeated likes, comments, and instant visual estimates."
     />
     <meta property="og:image" content="hero-gallery.jpg" />
     <meta property="og:site_name" content="Chromatic Oil Salon" />
@@ -27,10 +27,11 @@
     <meta name="twitter:title" content="Chromatic Oil Salon | Online Oil Exhibition" />
     <meta
       name="twitter:description"
-      content="A vivid online oil painting exhibition for discovering, uploading, liking, and commenting on oil artworks."
+      content="A vivid online oil painting exhibition for discovering, uploading, adding likes, and commenting on oil artworks."
     />
     <meta name="twitter:image" content="hero-gallery.jpg" />
     <link rel="canonical" href="/" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="manifest" href="site.webmanifest" />
     <link rel="stylesheet" href="styles.css" />
     <script type="application/ld+json">
@@ -158,6 +159,13 @@
           <h2 id="dialog-title"></h2>
           <p class="artist-line" id="dialog-artist"></p>
           <p class="story-line" id="dialog-story"></p>
+          <section class="visual-estimate" aria-labelledby="visual-estimate-title" aria-describedby="visual-estimate-note">
+            <div class="visual-estimate-heading">
+              <p id="visual-estimate-title">AI-style visual estimate</p>
+              <output class="visual-estimate-value" id="dialog-score" aria-live="polite"></output>
+            </div>
+            <p id="visual-estimate-note">An instant 1–10 estimate made in this browser from colour, tonal range, and texture. It is not a professional assessment.</p>
+          </section>
           <div class="dialog-actions">
             <button class="like-button" id="dialog-like" type="button"></button>
           </div>
@@ -185,6 +193,7 @@
             <p class="art-artist"></p>
           </div>
           <div class="card-actions">
+            <output class="score-chip card-score" aria-live="polite"></output>
             <button class="icon-button card-like" type="button" aria-label="Like"></button>
             <button class="icon-button card-comment" type="button" aria-label="Comment"></button>
           </div>

@@ -528,6 +528,22 @@ a:focus-visible {
   gap: 8px;
 }
 
+.score-chip {
+  display: inline-grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 40px;
+  padding: 6px 8px;
+  border: 1px solid rgba(23, 88, 200, 0.24);
+  border-radius: var(--radius);
+  color: #123e8f;
+  background: rgba(23, 88, 200, 0.1);
+  font-size: 0.72rem;
+  font-weight: 850;
+  line-height: 1.15;
+  text-align: center;
+}
+
 .icon-button {
   display: inline-grid;
   place-items: center;
@@ -540,8 +556,7 @@ a:focus-visible {
   cursor: pointer;
 }
 
-.icon-button:hover,
-.icon-button.is-liked {
+.icon-button:hover {
   color: #fffaf0;
   background: var(--vermilion);
 }
@@ -667,6 +682,47 @@ a:focus-visible {
   line-height: 1.75;
 }
 
+.visual-estimate {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid rgba(23, 88, 200, 0.22);
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(23, 88, 200, 0.1), rgba(242, 183, 53, 0.14));
+}
+
+.visual-estimate-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.visual-estimate-heading p {
+  margin-bottom: 0;
+  color: #123e8f;
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.visual-estimate-value {
+  flex: 0 0 auto;
+  color: var(--cobalt);
+  font-size: clamp(1.75rem, 4vw, 2.7rem);
+  font-weight: 950;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+
+.visual-estimate > p {
+  margin-bottom: 0;
+  color: rgba(23, 18, 15, 0.68);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
 .dialog-actions {
   display: flex;
   gap: 10px;
@@ -682,10 +738,11 @@ a:focus-visible {
   font-weight: 850;
 }
 
-.like-button.is-liked {
+.like-button:hover,
+.like-button:focus-visible {
   color: #fffaf0;
-  background: var(--vermilion);
   border-color: var(--vermilion);
+  background: var(--vermilion);
 }
 
 .comments-panel {
@@ -827,14 +884,25 @@ a:focus-visible {
   }
 
   .card-actions {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .icon-button {
+  .icon-button,
+  .score-chip {
     width: 100%;
   }
 
   .comment-form {
     display: grid;
+  }
+
+  .visual-estimate-heading {
+    align-items: start;
+    flex-wrap: wrap;
+  }
+
+  .visual-estimate-value {
+    width: 100%;
+    text-align: left;
   }
 }
