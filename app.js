@@ -498,9 +498,7 @@ function renderDialog(id) {
     item.className = "comment";
     const body = document.createElement("p");
     body.textContent = comment.text;
-    const date = document.createElement("small");
-    date.textContent = formatCommentTime(comment.at);
-    item.append(body, date);
+    item.append(body);
     dialogComments.append(item);
   });
 }
@@ -925,12 +923,6 @@ function applyPublicFeedback(payload, requestedArtworkId) {
   renderGallery();
   renderCommentStream();
   if (dialog.open && activeArtworkId) renderDialog(activeArtworkId);
-}
-
-function formatCommentTime(value) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Just now";
-  return date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
 }
 
 function fileToGalleryImageBlob(file) {
