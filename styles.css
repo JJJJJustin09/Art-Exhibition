@@ -802,12 +802,6 @@ a:focus-visible {
   margin-bottom: 0;
 }
 
-.comment small {
-  display: block;
-  margin-top: 5px;
-  color: rgba(23, 18, 15, 0.52);
-}
-
 .comment-form {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
