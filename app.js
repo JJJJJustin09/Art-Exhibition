@@ -59,6 +59,22 @@ const seedArtworks = [
   { id: "wechat-img-216", title: "Roses at Closing Time", artist: "Rose Dept.", mood: "still-life", image: "assets/artworks/32-wechat-img-216.webp", story: "flowers after everyone has left.", likes: 0, comments: [] },
   { id: "wechat-img-225", title: "Rain Leaves the Town", artist: "0225", mood: "city", image: "assets/artworks/33-wechat-img-225.webp", story: "wet pavement > dry pavement.", likes: 0, comments: [] },
   { id: "wechat-img-235", title: "The Tie Was His Idea", artist: "A.R. / no bio", mood: "figure", image: "assets/artworks/34-wechat-img-235.webp", story: "a gentleman with excellent posture and unfinished business.", likes: 0, comments: [] },
+  { id: "justin-h-happy", title: "happy", artist: "Justin H", mood: "abstract", image: "assets/artworks/35-justin-h-happy.jpg", story: "", likes: 0, comments: [] },
+  { id: "justin-h-nervious", title: "nervious", artist: "Justin H", mood: "abstract", image: "assets/artworks/36-justin-h-nervious.jpg", story: "", likes: 0, comments: [] },
+  { id: "justin-h-hope", title: "hope", artist: "Justin H", mood: "abstract", image: "assets/artworks/37-justin-h-hope.jpg", story: "", likes: 0, comments: [] },
+  { id: "justin-h-chaos", title: "chaos", artist: "Justin H", mood: "abstract", image: "assets/artworks/38-justin-h-chaos.jpg", story: "", likes: 0, comments: [] },
+  { id: "justin-h-scare", title: "scare", artist: "Justin H", mood: "abstract", image: "assets/artworks/39-justin-h-scare.jpg", story: "", likes: 0, comments: [] },
+  { id: "justin-h-waste", title: "waste", artist: "Justin H", mood: "abstract", image: "assets/artworks/40-justin-h-waste.jpg", story: "", likes: 0, comments: [] },
+  { id: "justin-h-sad", title: "sad", artist: "Justin H", mood: "abstract", image: "assets/artworks/41-justin-h-sad.jpg", story: "", likes: 0, comments: [] },
+  { id: "justin-h-confused", title: "confused", artist: "Justin H", mood: "abstract", image: "assets/artworks/42-justin-h-confused.jpg", story: "", likes: 0, comments: [] },
+  { id: "justin-h-choice", title: "choice", artist: "Justin H", mood: "abstract", image: "assets/artworks/43-justin-h-choice.jpg", story: "", likes: 0, comments: [] },
+  { id: "wechat-img-864", title: "The Hand That Stayed", artist: "P. / 4:11", mood: "figure", image: "assets/artworks/44-the-hand-that-stayed.jpg", story: "thinking pose, excellent beard, zero rush.", likes: 0, comments: [] },
+  { id: "wechat-img-865", title: "Where the Fields Bend", artist: "sunlit_karst", mood: "landscape", image: "assets/artworks/45-where-the-fields-bend.jpg", story: "field study: green wins again.", likes: 0, comments: [] },
+  { id: "wechat-img-866", title: "A Bridge Before Evening", artist: "A. Varela", mood: "city", image: "assets/artworks/46-a-bridge-before-evening.jpg", story: "The bridge steadies the composition while water carries the town into reflection.", likes: 0, comments: [] },
+  { id: "wechat-img-1766", title: "Amour (Love)", artist: "amour.exe", mood: "abstract", image: "assets/artworks/47-amour-love.jpg", story: "amour, but painted at maximum volume. 💗", likes: 0, comments: [] },
+  { id: "wechat-img-1765", title: "Ribbon Has Opinions", artist: "RED_RIBBON_01", mood: "abstract", image: "assets/artworks/48-ribbon-has-opinions.jpg", story: "red mode activated / fabric refusing to behave.", likes: 0, comments: [] },
+  { id: "wechat-img-1764", title: "Soft Armor, Loud Weather", artist: "C.粘", mood: "abstract", image: "assets/artworks/49-soft-armor-loud-weather.jpg", story: "texture > explanation", likes: 0, comments: [] },
+  { id: "wechat-img-863", title: "Orange Flowers for a Quiet Day", artist: "Hana M.", mood: "still-life", image: "assets/artworks/50-orange-flowers-quiet-day.jpg", story: "Flowers brought to a conversation she had already left.", likes: 0, comments: [] },
 ];
 
 const galleryGrid = document.querySelector("#gallery-grid");
