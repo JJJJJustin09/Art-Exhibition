@@ -13,6 +13,28 @@ const IMAGE_DB_VERSION = 1;
 const IMAGE_STORE_NAME = "uploaded-images";
 const VISUAL_SCORE_MIN = 1;
 const VISUAL_SCORE_MAX = 10;
+const PUBLIC_FEEDBACK_RPC = "https://rviwoisnpjkoadbsniuz.supabase.co/rest/v1/rpc";
+// Publishable Supabase keys are designed for browser use. The database only
+// exposes three tightly-scoped RPC functions to this key; no table is public.
+const PUBLIC_FEEDBACK_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2aXdvaXNucGprb2FkYnNuaXV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwOTg2NzgsImV4cCI6MjA5OTY3NDY3OH0.HF_4N0ftJHFZJQK-hFTuYXCVhG0JqNmdgCMaX8wpOn0";
+const PUBLIC_FEEDBACK_VISITOR_KEY = "oil-salon-public-feedback-visitor-v1";
+const PUBLIC_FEEDBACK_POLL_MS = 3000;
+
+const initialPublicLikes = {
+  "wechat-img-185": 34, "wechat-img-207": 55, "wechat-img-217": 62, "wechat-img-226": 8,
+  "wechat-img-190": 23, "wechat-img-208": 17, "wechat-img-218": 45, "wechat-img-227": 11,
+  "wechat-img-202": 3, "wechat-img-209": 44, "wechat-img-219": 51, "wechat-img-228": 3,
+  "wechat-img-203": 1, "wechat-img-211": 33, "wechat-img-220": 7, "wechat-img-229": 17,
+  "wechat-img-212": 73, "wechat-img-221": 8, "wechat-img-231": 2, "wechat-img-213": 57,
+  "wechat-img-222": 29, "wechat-img-232": 37, "wechat-img-204": 20, "wechat-img-214": 9,
+  "wechat-img-223": 8, "wechat-img-233": 2, "wechat-img-205": 12, "wechat-img-215": 59,
+  "wechat-img-224": 30, "wechat-img-234": 5, "wechat-img-206": 46, "wechat-img-216": 28,
+  "wechat-img-225": 6, "wechat-img-235": 1, "justin-h-happy": 34, "justin-h-nervious": 45,
+  "justin-h-hope": 49, "justin-h-chaos": 12, "justin-h-scare": 88, "justin-h-waste": 68,
+  "justin-h-sad": 52, "justin-h-confused": 9, "justin-h-choice": 23, "wechat-img-864": 8,
+  "wechat-img-865": 22, "wechat-img-866": 37, "wechat-img-1766": 0, "wechat-img-1765": 1,
+  "wechat-img-1764": 2, "wechat-img-863": 0,
+};
 
 const moodLabels = {
   landscape: "Landscape Room",
@@ -23,7 +45,8 @@ const moodLabels = {
 };
 
 // These are bundled with the published site, so every visitor receives the
-// same 34-work exhibition before any browser-local interactions are added.
+// same 50-work exhibition. Public likes and comments are refreshed from the
+// shared exhibition service after the first paint.
 const seedArtworks = [
   { id: "wechat-img-185", title: "The Painting in the Room", artist: "FrameHunter", mood: "landscape", image: "assets/artworks/01-wechat-img-185.webp", story: "A room, a landscape, and a frame that refuses to stay quiet.", likes: 0, comments: [] },
   { id: "wechat-img-207", title: "Snow Has No Memory", artist: "Nº 9 / north", mood: "landscape", image: "assets/artworks/02-wechat-img-207.webp", story: "snow + blue + one impossible horizon.", likes: 0, comments: [] },
@@ -102,6 +125,7 @@ let artworks = [];
 let activeFilter = "all";
 let activeArtworkId = null;
 let selectedFile = null;
+let recentSharedComments = [];
 
 init();
 
@@ -110,6 +134,8 @@ async function init() {
   artworks = (await loadArtworks()).map(normalizeArtwork);
   render();
   void populateVisualEstimates();
+  void refreshPublicFeedback();
+  window.setInterval(() => void refreshPublicFeedback(), PUBLIC_FEEDBACK_POLL_MS);
 }
 
 async function clearLegacyStorage() {
@@ -262,13 +288,10 @@ dialogLike.addEventListener("click", () => {
   if (!activeArtworkId) {
     return;
   }
-  addLike(activeArtworkId);
-  renderDialog(activeArtworkId);
-  renderGallery();
-  renderCommentStream();
+  void addLike(activeArtworkId);
 });
 
-commentForm.addEventListener("submit", (event) => {
+commentForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!activeArtworkId) {
     return;
@@ -280,12 +303,56 @@ commentForm.addEventListener("submit", (event) => {
   }
 
   const artwork = artworks.find((item) => item.id === activeArtworkId);
-  artwork.comments.unshift({ text, at: "Just now" });
-  commentInput.value = "";
-  saveArtworks();
-  renderDialog(activeArtworkId);
-  renderGallery();
-  renderCommentStream();
+  if (!artwork) {
+    return;
+  }
+
+  if (!isSharedArtwork(artwork.id)) {
+    artwork.comments.unshift({ text, at: "Just now" });
+    artwork.commentCount = artwork.comments.length;
+    commentInput.value = "";
+    saveArtworks();
+    renderDialog(activeArtworkId);
+    renderGallery();
+    renderCommentStream();
+    return;
+  }
+
+  const visitorId = getPublicFeedbackVisitorId();
+  if (!visitorId) {
+    alert("Comments need a modern browser session. Please refresh and try again.");
+    return;
+  }
+
+  const submitButton = commentForm.querySelector("button[type='submit']");
+  submitButton.disabled = true;
+  commentInput.disabled = true;
+
+  try {
+    const response = await postPublicFeedback("/comments", {
+      artworkId: artwork.id,
+      visitorId,
+      body: text,
+    });
+    const comment = response.comment;
+    artwork.comments.unshift({ id: comment.id, text: comment.body, at: comment.createdAt });
+    artwork.commentsLoaded = true;
+    artwork.commentCount = (artwork.commentCount || 0) + 1;
+    recentSharedComments = [
+      { id: comment.id, artworkId: artwork.id, text: comment.body, at: comment.createdAt },
+      ...recentSharedComments.filter((item) => item.id !== comment.id),
+    ].slice(0, 5);
+    commentInput.value = "";
+    renderDialog(activeArtworkId);
+    renderGallery();
+    renderCommentStream();
+    void refreshPublicFeedback();
+  } catch (error) {
+    alert(error.message || "Your comment could not be saved. Please try again shortly.");
+  } finally {
+    submitButton.disabled = false;
+    commentInput.disabled = false;
+  }
 });
 
 function render() {
@@ -325,15 +392,13 @@ function renderGallery() {
     scoreChip.textContent = visualScoreLabel(artwork);
     scoreChip.setAttribute("aria-label", visualScoreAccessibleLabel(artwork));
     likeButton.textContent = `♥ ${artwork.likes}`;
-    commentButton.textContent = `✎ ${artwork.comments.length}`;
+    commentButton.textContent = `✎ ${artwork.commentCount || 0}`;
     likeButton.setAttribute("aria-label", `Add a like to ${artwork.title}. ${artwork.likes} likes so far.`);
     commentButton.setAttribute("aria-label", `Comment on ${artwork.title}`);
 
     artworkButton.addEventListener("click", () => openArtwork(artwork.id));
     likeButton.addEventListener("click", () => {
-      addLike(artwork.id);
-      renderGallery();
-      renderCommentStream();
+      void addLike(artwork.id);
     });
     commentButton.addEventListener("click", () => openArtwork(artwork.id, true));
 
@@ -342,14 +407,19 @@ function renderGallery() {
 }
 
 function renderCommentStream() {
-  const comments = artworks
-    .flatMap((artwork) =>
-      artwork.comments.map((comment) => ({
-        ...comment,
-        title: artwork.title,
-      })),
-    )
-    .slice(0, 5);
+  const comments = recentSharedComments.length
+    ? recentSharedComments.map((comment) => ({
+      ...comment,
+      title: artworks.find((artwork) => artwork.id === comment.artworkId)?.title || "Artwork",
+    }))
+    : artworks
+      .flatMap((artwork) =>
+        artwork.comments.map((comment) => ({
+          ...comment,
+          title: artwork.title,
+        })),
+      )
+      .slice(0, 5);
 
   commentStream.innerHTML = "";
 
@@ -364,10 +434,11 @@ function renderCommentStream() {
   comments.forEach((comment) => {
     const item = document.createElement("article");
     item.className = "stream-item";
-    item.innerHTML = `
-      <strong>${escapeHtml(comment.title)}</strong>
-      <p>${escapeHtml(comment.text)}</p>
-    `;
+    const title = document.createElement("strong");
+    title.textContent = comment.title;
+    const body = document.createElement("p");
+    body.textContent = comment.text;
+    item.append(title, body);
     commentStream.append(item);
   });
 }
@@ -375,6 +446,9 @@ function renderCommentStream() {
 function openArtwork(id, focusComment = false) {
   activeArtworkId = id;
   renderDialog(id);
+  if (isSharedArtwork(id)) {
+    void refreshPublicFeedback(id);
+  }
 
   if (!dialog.open) {
     dialog.showModal();
@@ -403,6 +477,14 @@ function renderDialog(id) {
 
   dialogComments.innerHTML = "";
 
+  if (isSharedArtwork(artwork.id) && !artwork.commentsLoaded) {
+    const loading = document.createElement("p");
+    loading.className = "empty-state";
+    loading.textContent = "Loading shared comments…";
+    dialogComments.append(loading);
+    return;
+  }
+
   if (!artwork.comments.length) {
     const empty = document.createElement("p");
     empty.className = "empty-state";
@@ -414,10 +496,11 @@ function renderDialog(id) {
   artwork.comments.forEach((comment) => {
     const item = document.createElement("article");
     item.className = "comment";
-    item.innerHTML = `
-      <p>${escapeHtml(comment.text)}</p>
-      <small>${escapeHtml(comment.at)}</small>
-    `;
+    const body = document.createElement("p");
+    body.textContent = comment.text;
+    const date = document.createElement("small");
+    date.textContent = formatCommentTime(comment.at);
+    item.append(body, date);
     dialogComments.append(item);
   });
 }
@@ -428,14 +511,43 @@ function updateFilters() {
   });
 }
 
-function addLike(id) {
+async function addLike(id) {
   const artwork = artworks.find((item) => item.id === id);
   if (!artwork) {
     return;
   }
 
+  if (!isSharedArtwork(id)) {
+    artwork.likes = Math.max(0, Number.parseInt(artwork.likes, 10) || 0) + 1;
+    saveArtworks();
+    renderGallery();
+    renderCommentStream();
+    if (dialog.open && activeArtworkId === id) renderDialog(id);
+    return;
+  }
+
+  const visitorId = getPublicFeedbackVisitorId();
+  const requestId = createRequestId();
+  if (!visitorId || !requestId) {
+    alert("Likes need a modern browser session. Please refresh and try again.");
+    return;
+  }
+
   artwork.likes = Math.max(0, Number.parseInt(artwork.likes, 10) || 0) + 1;
-  saveArtworks();
+  renderGallery();
+  if (dialog.open && activeArtworkId === id) renderDialog(id);
+
+  try {
+    const response = await postPublicFeedback("/likes", { artworkId: id, visitorId, requestId });
+    artwork.likes = Math.max(artwork.likes, Number(response.likeCount) || 0);
+  } catch (error) {
+    artwork.likes = Math.max(0, artwork.likes - 1);
+    alert(error.message || "Your like could not be saved. Please try again shortly.");
+  } finally {
+    renderGallery();
+    renderCommentStream();
+    if (dialog.open && activeArtworkId === id) renderDialog(id);
+  }
 }
 
 async function populateVisualEstimates() {
@@ -473,8 +585,12 @@ async function populateVisualEstimates() {
 function normalizeArtwork(artwork) {
   const normalized = {
     ...artwork,
-    likes: Math.max(0, Number.parseInt(artwork.likes, 10) || 0),
+    likes: Object.hasOwn(initialPublicLikes, artwork.id)
+      ? initialPublicLikes[artwork.id]
+      : Math.max(0, Number.parseInt(artwork.likes, 10) || 0),
+    comments: Array.isArray(artwork.comments) ? artwork.comments : [],
   };
+  normalized.commentCount = Math.max(0, Number.parseInt(artwork.commentCount, 10) || normalized.comments.length);
 
   delete normalized.liked;
 
@@ -684,22 +800,137 @@ function cleanText(value) {
     .trim();
 }
 
-function escapeHtml(value) {
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+function createId() {
+  return createRequestId() || `art-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-function createId() {
-  const randomUUID = globalThis.crypto?.randomUUID;
-  if (typeof randomUUID === "function") {
-    return randomUUID.call(globalThis.crypto);
+function createRequestId() {
+  if (typeof globalThis.crypto?.randomUUID === "function") {
+    return globalThis.crypto.randomUUID();
   }
 
-  return `art-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  if (typeof globalThis.crypto?.getRandomValues !== "function") {
+    return null;
+  }
+
+  const bytes = globalThis.crypto.getRandomValues(new Uint8Array(16));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = [...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
+function isSharedArtwork(id) {
+  return Object.hasOwn(initialPublicLikes, id);
+}
+
+function getPublicFeedbackVisitorId() {
+  try {
+    const stored = localStorage.getItem(PUBLIC_FEEDBACK_VISITOR_KEY);
+    if (typeof stored === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(stored)) {
+      return stored;
+    }
+    const visitorId = createRequestId();
+    if (visitorId) localStorage.setItem(PUBLIC_FEEDBACK_VISITOR_KEY, visitorId);
+    return visitorId;
+  } catch (error) {
+    return createRequestId();
+  }
+}
+
+async function callPublicFeedbackRpc(functionName, body) {
+  const response = await fetch(`${PUBLIC_FEEDBACK_RPC}/${functionName}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      apikey: PUBLIC_FEEDBACK_KEY,
+      Authorization: `Bearer ${PUBLIC_FEEDBACK_KEY}`,
+    },
+    body: JSON.stringify(body),
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(payload.message || payload.error || "The shared exhibition service is unavailable.");
+  }
+  return payload;
+}
+
+async function postPublicFeedback(path, body) {
+  if (path === "/likes") {
+    const likeCount = await callPublicFeedbackRpc("increment_static_gallery_likes_public", {
+      p_artwork_key: body.artworkId,
+      p_request_id: body.requestId,
+      p_visitor_id: body.visitorId,
+    });
+    return { artworkId: body.artworkId, likeCount: Number(likeCount) };
+  }
+
+  if (path === "/comments") {
+    const comment = await callPublicFeedbackRpc("create_static_gallery_comment_public", {
+      p_artwork_key: body.artworkId,
+      p_visitor_id: body.visitorId,
+      p_body: body.body,
+    });
+    return { comment };
+  }
+
+  throw new Error("The shared exhibition service is unavailable.");
+}
+
+async function refreshPublicFeedback(artworkId = activeArtworkId) {
+  try {
+    const payload = await callPublicFeedbackRpc("read_static_gallery_feedback", {
+      p_artwork_key: isSharedArtwork(artworkId) ? artworkId : null,
+    });
+    applyPublicFeedback(payload, artworkId);
+  } catch (error) {
+    // The bundled counts remain visible while a visitor is offline.
+  }
+}
+
+function applyPublicFeedback(payload, requestedArtworkId) {
+  if (!payload || !Array.isArray(payload.artworks)) return;
+
+  const feedbackByArtworkId = new Map(
+    payload.artworks.map((feedback) => [feedback.artworkId, feedback]),
+  );
+  artworks.forEach((artwork) => {
+    const feedback = feedbackByArtworkId.get(artwork.id);
+    if (!feedback) return;
+    artwork.likes = Math.max(0, Number.parseInt(feedback.likeCount, 10) || 0);
+    artwork.commentCount = Math.max(0, Number.parseInt(feedback.commentCount, 10) || 0);
+  });
+
+  if (Array.isArray(payload.latestComments)) {
+    recentSharedComments = payload.latestComments.map((comment) => ({
+      id: comment.id,
+      artworkId: comment.artworkId,
+      text: comment.body,
+      at: comment.createdAt,
+    }));
+  }
+
+  if (requestedArtworkId && Array.isArray(payload.comments)) {
+    const artwork = artworks.find((item) => item.id === requestedArtworkId);
+    if (artwork) {
+      artwork.comments = payload.comments.map((comment) => ({
+        id: comment.id,
+        text: comment.body,
+        at: comment.createdAt,
+      }));
+      artwork.commentsLoaded = true;
+    }
+  }
+
+  renderGallery();
+  renderCommentStream();
+  if (dialog.open && activeArtworkId) renderDialog(activeArtworkId);
+}
+
+function formatCommentTime(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Just now";
+  return date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
 }
 
 function fileToGalleryImageBlob(file) {
